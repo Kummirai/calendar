@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Schedule - March to October 2025</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .calendar-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .month-calendar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        .month-title {
+            text-align: center;
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .day-names {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .day {
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 4px;
+        }
+        .day.empty {
+            visibility: hidden;
+        }
+        .day.has-session {
+            background-color: #e3f2fd;
+            font-weight: bold;
+            position: relative;
+        }
+        .day.has-session:hover {
+            background-color: #bbdefb;
+            cursor: pointer;
+        }
+        .day.has-session::after {
+            content: '★';
+            color: #e74c3c;
+            font-size: 10px;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .download-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .download-btn:hover {
+            background-color: #2980b9;
+        }
+        .legend {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .session-details {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .session-details h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .session-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tutorial Schedule - March to October 2025</h1>
+    
+    <div class="legend">
+        <p>Days with tutorial sessions are highlighted. Hover for details.</p>
+    </div>
+    
+    <div class="controls">
+        <button class="download-btn" onclick="downloadCSV()">Download Full Schedule as CSV</button>
+    </div>
+    
+    <div class="calendar-container" id="calendar">
+        <!-- Calendar months will be inserted here by JavaScript -->
+    </div>
+    
+    <div class="session-details">
+        <h2>All Scheduled Sessions</h2>
+        <div class="session-list">
+            <table id="session-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sessions will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Session data
+        const sessions = [
+            {date: '30/03/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '01/04/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '05/04/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '06/04/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '08/04/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '12/04/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '13/04/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '15/04/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '19/04/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '20/04/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '22/04/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '26/04/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '27/04/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '29/04/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '03/05/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '04/05/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '06/05/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '10/05/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '11/05/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '13/05/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '17/05/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '18/05/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '20/05/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '24/05/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '25/05/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '27/05/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '31/05/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '01/06/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '03/06/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '07/06/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '08/06/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '10/06/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '14/06/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '15/06/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '17/06/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '21/06/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '22/06/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '24/06/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '28/06/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '29/06/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '01/07/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '05/07/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '06/07/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '08/07/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '12/07/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '13/07/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '15/07/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '19/07/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '20/07/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '22/07/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '26/07/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '27/07/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '29/07/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '02/08/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '03/08/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '05/08/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '09/08/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '10/08/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '12/08/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '16/08/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '17/08/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '19/08/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '23/08/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '24/08/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '26/08/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '30/08/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '31/08/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '02/09/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '06/09/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '07/09/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '09/09/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '13/09/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '14/09/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '16/09/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '20/09/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '21/09/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '23/09/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '27/09/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '28/09/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '30/09/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '04/10/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '05/10/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '07/10/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '11/10/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '12/10/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '14/10/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '18/10/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '19/10/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'},
+            {date: '21/10/2025', day: 'Tuesday', time: '7:00 PM - 8:00 PM', type: 'Tuesday Session'},
+            {date: '25/10/2025', day: 'Saturday', time: '7:00 PM - 8:00 PM', type: 'Saturday Session'},
+            {date: '26/10/2025', day: 'Sunday', time: '7:00 PM - 8:00 PM', type: 'Sunday Session'}
+        ];
+
+        // Function to parse date in DD/MM/YYYY format
+        function parseDate(dateStr) {
+            const parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+
+        // Generate calendar months
+        function generateCalendar() {
+            const calendarContainer = document.getElementById('calendar');
+            const sessionTable = document.querySelector('#session-table tbody');
+            
+            // Group sessions by month
+            const months = {};
+            sessions.forEach(session => {
+                const date = parseDate(session.date);
+                const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                
+                if (!months[monthYear]) {
+                    months[monthYear] = [];
+                }
+                months[monthYear].push(session);
+                
+                // Add to session table
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${session.date}</td>
+                    <td>${session.day}</td>
+                    <td>${session.time}</td>
+                    <td>${session.type}</td>
+                `;
+                sessionTable.appendChild(row);
+            });
+            
+            // Create calendar for each month
+            for (const [monthYear, monthSessions] of Object.entries(months)) {
+                const firstSession = monthSessions[0];
+                const date = parseDate(firstSession.date);
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month-calendar';
+                
+                const title = document.createElement('div');
+                title.className = 'month-title';
+                title.textContent = monthYear;
+                monthDiv.appendChild(title);
+                
+                const dayNames = document.createElement('div');
+                dayNames.className = 'day-names';
+                dayNames.innerHTML = `
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                `;
+                monthDiv.appendChild(dayNames);
+                
+                const daysGrid = document.createElement('div');
+                daysGrid.className = 'days-grid';
+                
+                // Get first day of month and how many days in month
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'day empty';
+                    daysGrid.appendChild(emptyDay);
+                }
+                
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'day';
+                    dayDiv.textContent = day;
+                    
+                    // Check if this day has a session
+                    const dayHasSession = monthSessions.some(session => {
+                        const sessionDate = parseDate(session.date);
+                        return sessionDate.getDate() === day;
+                    });
+                    
+                    if (dayHasSession) {
+                        dayDiv.classList.add('has-session');
+                        
+                        // Add tooltip with session info
+                        const session = monthSessions.find(s => {
+                            const sessionDate = parseDate(s.date);
+                            return sessionDate.getDate() === day;
+                        });
+                        
+                        dayDiv.title = `${session.day}\n${session.time}\n${session.type}`;
+                    }
+                    
+                    daysGrid.appendChild(dayDiv);
+                }
+                
+                monthDiv.appendChild(daysGrid);
+                calendarContainer.appendChild(monthDiv);
+            }
+        }
+
+        // Function to download CSV
+        function downloadCSV() {
+            let csvContent = "Subject,Start Date,Start Time,End Date,End Time,Description,Location\n";
+            
+            sessions.forEach(session => {
+                const dateParts = session.date.split('/');
+                const formattedDate = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
+                const [startTime, endTime] = session.time.split(' - ');
+                
+                csvContent += `Tutorial Session,${formattedDate},${startTime},${formattedDate},${endTime},"${session.type}",Online\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'Tutorial_Schedule_2025.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize calendar when page loads
+        window.onload = generateCalendar;
+    </script>
+</body>
+</html>
